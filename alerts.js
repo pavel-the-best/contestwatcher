@@ -24,17 +24,17 @@ const warning_manager = (function () {
 			.get('users')
 			.value()
 			.forEach(function (user) {
-				if (!user.notify) return;
-
-				var message = instance.buffer.reduce((message, warning) => {
-					var ev = warning.ev;
-					if (!user.ignore[ev.judge])
-						message += html_msg.make_link(ev.name, ev.url) + html_msg.escape(' will start in ' + warning.left + '.') + '\n';
-					return message;
-				}, "");
+				if (user.notify) {
+				    var message = instance.buffer.reduce((message, warning) => {
+					    var ev = warning.ev;
+    					if (!user.ignore[ev.judge])
+	    					message += html_msg.make_link(ev.name, ev.url) + html_msg.escape(' will start in ' + warning.left + '.') + '\n';
+		    			return message;
+			    	}, "");
 				
-				if (message !== "")
-					bot.sendSimpleHtml(user.id, message);
+				    if (message !== "")
+					    bot.sendSimpleHtml(user.id, message);
+                }
 			});
 		instance.buffer = [];
 	};

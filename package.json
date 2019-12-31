@@ -30,13 +30,16 @@
   "dependencies": {
     "async-semaphore": "^2.0.0",
     "botanio": "^0.0.6",
+    "commander": "^4.0.1",
     "dateformat": "^2.0.0",
-    "ical": "^0.5.0",
+    "ical": "^0.6.0",
     "jsdom": "^9.11.0",
     "lowdb": "^0.16.1",
     "moment-timezone": "^0.5.11",
     "node-schedule": "^1.2.0",
     "node-telegram-bot-api": "^0.27.0",
+    "socks5-http-client": "^1.0.4",
+    "socks5-https-client": "^1.2.1",
     "true-html-escape": "^1.0.0",
     "winston": "^2.4.0"
   }

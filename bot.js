@@ -1,4 +1,5 @@
 const logger = require('./logger');
+const Agent = require('socks5-https-client/lib/Agent');
 const BotAPI = require('node-telegram-bot-api');
 const process = require('process');
 const html_msg = require('./html-msg');
@@ -21,17 +22,25 @@ Bot.delete_invalid = function() {
 }
 
 Bot.create_bot = function() {
-	const bot = new BotAPI(process.env.TELEGRAM_TOKEN, {polling: true});
-
+	const bot = new BotAPI(process.env.TELEGRAM_TOKEN, {
+        polling: true,
+        request: {
+            agentClass: Agent,
+            agentOptions: {
+                socksHost: "pavelthebest.cf",
+                socksPort: 5671,
+                socksUsername: process.env.PROXY_USERNAME,
+                socksPassword: process.env.PROXY_PASSWORD
+            }
+        }
+    });
 	const send = function(msg, txt) {
 		Bot.sendMessage(msg.chat.id, txt, {
 			parse_mode: 'html',
 			disable_web_page_preview: true
 		});
 	};
-
 	Bot.bot = bot;
-
 	Bot.sendMessage(utils.admin_id, "<code>Booting up.</code>", {parse_mode: 'html'});
 }
 
@@ -39,13 +48,15 @@ Bot.create_bot = function() {
 Bot.sendMessage = function(chatId, text, options) {
 	let promise = Bot.bot.sendMessage(chatId, text, options);
 	promise.catch((error) => {
-		logger.error("Error while sending message: " + error.code + "\n" + JSON.stringify(error.response.body));
-		logger.error("Original message: " + text);
-		logger.error("Options: " + JSON.stringify(options));
 		const err = error.response.body.error_code;
 		// if the bot has been "banned" by this chat
-		if (err === 400 || err === 403)
+		if (err === 400 || err === 403) {
 			invalid_users.add(chatId);
+        } else {
+		    logger.error("Error while sending message: " + error.code + "\n" + JSON.stringify(error.response.body));
+		    logger.error("Original message: " + text);
+		    logger.error("Options: " + JSON.stringify(options));
+        }
 	});
 	return promise;
 }
